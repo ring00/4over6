@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Ladder</string>
+    <string name="server_address">Server Address</string>
+    <string name="server_port">Server Port</string>
+    <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
+
+    <string name="default_address">2402:f000:1:4417::900</string>
+    <string name="default_port">5678</string>
+</resources>
