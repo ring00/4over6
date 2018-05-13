@@ -84,13 +84,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 onActivityResult(0, RESULT_OK, null);
             }
 
-            updater = new Thread(this);
-            updater.start();
+//            updater = new Thread(this);
+//            runOnUiThread(updater);
+//            updater.start();
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult: ");
         if (resultCode == RESULT_OK) {
             Intent intent = new Intent(this, LadderService.class);
             intent.putExtra(getString(R.string.server_address), addressText.getText().toString());

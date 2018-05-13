@@ -153,8 +153,9 @@ const char* init(const char* server_addr, int server_port) {
     }
 
     static char buffer[4096];
-
-    sprintf(buffer, "%d %s", sockfd, msg.data);
+    msg.data[ntohl(msg.hdr.length)] = '\0';
+    LOG("header len: %d! mssage is: %s\n", ntohl(msg.hdr.length), msg.data);
+    sprintf(buffer, "%d %s\0", sockfd, msg.data);
 
     return buffer;
 }
@@ -165,8 +166,10 @@ void* forward(void*) {
     while (alive) {
         int length = read(tunfd, msg.data, 4096);
         if (length > 0) {
+            LOG("forward len: %d", length);
             msg.hdr.type = REQUEST;
-            msg.hdr.length = length;
+            msg.hdr.length = htonl(length);
+            msg.hdr.length = htonl(length);
             if (send(sockfd, &msg, length + sizeof(struct Header), 0) == -1) {
                 LOG("Failed to forward message: %s.\n", strerror(errno));
             }
@@ -185,17 +188,18 @@ void* receive(void*) {
     time(&timestamp);
 
     while (alive) {
-        if (recv(sockfd, &msg, sizeof(struct Header), 0) !=
-            sizeof(struct Header)) {
-            LOG("Failed to receive message header: %s.\n", strerror(errno));
+        int length = 0;
+        while (length < sizeof(struct Header)) {
+            length += recv(sockfd, &msg + length, sizeof(struct Header) - length, 0);
         }
 
         int type = msg.hdr.type;
+        LOG("receive type: %d", type);
         if (type == RESPONSE) {
             int length = 0;
-            while (length < msg.hdr.length) {
+            while (length < ntohl(msg.hdr.length)) {
                 length +=
-                        recv(sockfd, msg.data + length, msg.hdr.length - length, 0);
+                        recv(sockfd, msg.data + length, ntohl(msg.hdr.length) - length, 0);
             }
             write(tunfd, msg.data, length);
 

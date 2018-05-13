@@ -5,6 +5,8 @@
     <string name="connect">Connect</string>
     <string name="disconnect">Disconnect</string>
 
-    <string name="default_address">2402:f000:1:4417::900</string>
-    <string name="default_port">5678</string>
+    <!--<string name="default_address">2402:f000:1:4417::900</string>-->
+    <string name="default_address">2402:f000:9:8401:b:0:3:f34</string>
+    <!--<string name="default_port">5678</string>-->
+    <string name="default_port">10002</string>
 </resources>
