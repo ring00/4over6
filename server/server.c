@@ -109,14 +109,14 @@ int tun_alloc(char *dev) {
 		strncpy(ifr.ifr_name, dev, IFNAMSIZ);
 	}
 	
-	/*int err = ioctl(tun_fd, TUNSETIFF, (void *) &ifr);
+	int err = ioctl(fd, TUNSETIFF, (void *) &ifr);
 	if (err < 0) {
 		fprintf(stderr, "Error setting tunnel name\n");
 		close(fd);
 		exit(EXIT_FAILURE);
-	}*/
+	}
 	
-	if (fcntl(tun_fd, F_SETFL, O_NONBLOCK) < 0) {
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0) {
 		fprintf(stderr, "Error setting nonblock\n");
 		close(fd);
 		exit(EXIT_FAILURE);
@@ -154,7 +154,6 @@ void *client_thread_func(void *args) {
 			ret = recv(user_fd, &msg.header, sizeof(msg.header), 0);
 		}
 		pthread_mutex_lock(&mutex);
-		printf("ret = %d\n", ret);
 		if (ret != sizeof(msg.header)) {
 			break;
 		}
@@ -246,7 +245,7 @@ void *read_tun_thread_func(void *args) {
 }
 
 void init_DNS() {
-	system("cat /etc/resolv.conf | grep -i nameserver | cut -c 12-30 > DNS.txt");
+	system("cat /etc/resolv.conf | grep -i nameserver | cut -d ' ' -f 2 > DNS.txt");
 	FILE *f = fopen("DNS.txt", "r");
 	char DNS_string_tmp[100];
 	for (int i = 0; i < 3; i++) {
