@@ -4,12 +4,17 @@ import android.content.Intent;
 import android.net.VpnService;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,6 +43,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Thread updater = null;
 
     public native String getStatistics();
+
+    private Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            statistics.setText(String.valueOf(msg.obj));
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +95,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 onActivityResult(0, RESULT_OK, null);
             }
 
-//            updater = new Thread(this);
-//            runOnUiThread(updater);
-//            updater.start();
+            updater = new Thread(this);
+            updater.start();
         }
     }
 
@@ -103,12 +113,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void run() {
+        int seconds = 0;
         while (connected) {
             try {
                 sleep(1000);
             } catch (InterruptedException e) {
-                break;
+                e.printStackTrace();
             }
+            seconds++;
 
             String rawdata = getStatistics();
             String[] data = rawdata.split(" ");
@@ -123,8 +135,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             int flowOut = Integer.parseInt(data[6]);
             int timeOut = Integer.parseInt(data[7]);
 
-            String output = String.format("Total download: %d Bytes, %d Packets\nTotal upload: %d Bytes, %d Packets\nDownload speed: %.1f Bytes/s\nUploading speed: %.1f Bytes/s", bytesIn, packetsIn, bytesOut, packetsOut, (float)flowIn / timeIn, (float)flowOut / timeOut);
-            statistics.setText(output);
+            String output = String.format("Time: %d Seconds\nTotal download: %d Bytes, %d Packets\nTotal upload: %d Bytes, %d Packets\nDownload speed: %.1f Bytes/s\nUploading speed: %.1f Bytes/s", seconds, bytesIn, packetsIn, bytesOut, packetsOut, (float)flowIn / timeIn, (float)flowOut / timeOut);
+
+            Message message = new Message();
+            message.obj  = output;
+            handler.sendMessage(message);
         }
     }
 }
