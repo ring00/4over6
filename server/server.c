@@ -14,9 +14,6 @@
 #define DEFAULT_SERVER_PORT 10002
 #define CLIENT_QUEUE_LENGTH 10
 
-#define pthread_mutex_lock(x) do {} while (0)
-#define pthread_mutex_unlock(x) do {} while (0)
-
 pthread_mutex_t mutex;
 
 // Message types
@@ -155,7 +152,6 @@ void *client_thread_func(void *args) {
 		int ret = -1;
 		if (user_fd != -1) {
 			ret = recv(user_fd, &msg.header, sizeof(msg.header), 0);
-			printf("receive len %d!\n", ret);
 		}
 		pthread_mutex_lock(&mutex);
 		if (ret != sizeof(msg.header)) {
@@ -194,7 +190,6 @@ void *client_thread_func(void *args) {
 }
 
 void *keepalive_thread_func(void *args) {
-	return NULL;
 	pthread_mutex_lock(&mutex);
 	while (1) {
 		pthread_mutex_unlock(&mutex);
