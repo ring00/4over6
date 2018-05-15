@@ -33,7 +33,7 @@ public class LadderService extends VpnService {
         String router = parameters[2];
         String dns0 = parameters[3];
         String dns1 = parameters[4];
-        //String dns2 = parameters[5];
+        String dns2 = parameters[5];
 
         if (!protect(Integer.parseInt(sockfd))) {
             Log.d(TAG, "onStartCommand: failed to protect sockfd!");
@@ -45,7 +45,7 @@ public class LadderService extends VpnService {
                 .addRoute(router, 0)
                 .addDnsServer(dns0)
                 .addDnsServer(dns1)
-                //.addDnsServer(dns2)
+                .addDnsServer(dns2)
                 .setSession("4over6");
         parcelFileDescriptor = builder.establish();
         int fd = parcelFileDescriptor.getFd();

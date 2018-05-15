@@ -58,7 +58,10 @@
             android:id="@+id/statistics"
             android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="10dp"
+            android:layout_margin="10dp"
+            android:textSize="20sp"/>
 
         <Button
             android:id="@+id/button"

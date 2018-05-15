@@ -190,7 +190,7 @@ void* receive(void*) {
     while (alive) {
         int length = 0;
         while (length < sizeof(struct Header)) {
-            length += recv(sockfd, &msg + length, sizeof(struct Header) - length, 0);
+            length += recv(sockfd, (char*)&msg + length, sizeof(struct Header) - length, 0);
         }
 
         int type = msg.hdr.type;
@@ -222,7 +222,7 @@ void* count(void*) {
         time_t now = time(NULL);
         double diff = difftime(now, timestamp);
         if (diff > 60.0) {
-            alive = false;
+            //alive = false;
         } else if (seconds > 20) {
             seconds = 0;
             send(sockfd, &hdr, sizeof(struct Header), 0);

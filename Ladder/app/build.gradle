@@ -4,8 +4,8 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "io.github.ring00.ladder"
-        minSdkVersion 24
-        targetSdkVersion 26
+        minSdkVersion 14
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
