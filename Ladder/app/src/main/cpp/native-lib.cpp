@@ -87,10 +87,10 @@ enum {
     HEARTBEAT
 };
 
-int sockfd;
-int tunfd;
+int sockfd = 0;
+int tunfd = 0;
 
-bool alive;
+bool alive = false;
 
 time_t timestamp;
 
@@ -166,7 +166,6 @@ void* forward(void*) {
     while (alive) {
         int length = read(tunfd, msg.data, 4096);
         if (length > 0) {
-            LOG("forward len: %d", length);
             msg.hdr.type = REQUEST;
             msg.hdr.length = htonl(length);
             msg.hdr.length = htonl(length);
@@ -194,7 +193,6 @@ void* receive(void*) {
         }
 
         int type = msg.hdr.type;
-        LOG("receive type: %d", type);
         if (type == RESPONSE) {
             int length = 0;
             while (length < ntohl(msg.hdr.length)) {
@@ -265,7 +263,10 @@ void start(int fd) {
 void stop() {
     LOG("Stopping...\n");
     alive = false;
-    sockfd = 0;
+    if (sockfd != 0) {
+        close(sockfd);
+        sockfd = 0;
+    }
     tunfd = 0;
     memset(&in, 0, sizeof(struct Statistics));
     memset(&out, 0, sizeof(struct Statistics));

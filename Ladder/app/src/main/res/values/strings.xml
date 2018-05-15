@@ -6,7 +6,7 @@
     <string name="disconnect">Disconnect</string>
 
     <!--<string name="default_address">2402:f000:1:4417::900</string>-->
-    <string name="default_address">2402:f000:9:8401:b:0:2:ef97</string>
+    <string name="default_address">2402:f000:2:b801:1638:47d5:ef61:d0af</string>
     <!--<string name="default_port">5678</string>-->
     <string name="default_port">10002</string>
 </resources>

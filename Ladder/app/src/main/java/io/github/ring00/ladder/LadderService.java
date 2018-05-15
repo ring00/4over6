@@ -20,20 +20,17 @@ public class LadderService extends VpnService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand: ");
+        stop();
 
         String serverAddress = intent.getStringExtra(getString(R.string.server_address));
         String serverPort = intent.getStringExtra(getString(R.string.server_port));
 
-        stop();
         String response = init(serverAddress, Integer.parseInt(serverPort));
 
         String[] parameters = response.split(" ");
         String sockfd = parameters[0];
         String address = parameters[1];
         String router = parameters[2];
-        String dns0 = parameters[3];
-        String dns1 = parameters[4];
-        String dns2 = parameters[5];
 
         if (!protect(Integer.parseInt(sockfd))) {
             Log.d(TAG, "onStartCommand: failed to protect sockfd!");
@@ -42,11 +39,11 @@ public class LadderService extends VpnService {
         Builder builder = new Builder();
         builder.addAddress(address, 32)
                 .setMtu(1500)
-                .addRoute(router, 0)
-                .addDnsServer(dns0)
-                .addDnsServer(dns1)
-                .addDnsServer(dns2)
-                .setSession("4over6");
+                .addRoute(router, 0);
+        for (int i = 3; i < parameters.length; i++) {
+            builder.addDnsServer(parameters[i]);
+        }
+        builder.setSession("4over6");
         parcelFileDescriptor = builder.establish();
         int fd = parcelFileDescriptor.getFd();
 
