@@ -151,10 +151,17 @@ void *client_thread_func(void *args) {
 		int user_fd = user->fd;
 		int ret = -1;
 		if (user_fd != -1) {
-			ret = recv(user_fd, &msg.header, sizeof(msg.header), 0);
+			ret = recv(user_fd, &msg.header, sizeof(msg.header) ,0);
+			if (ret == -1) {
+				break;
+			}
+			while (ret < sizeof(msg.header)) {
+			    ret += recv(user_fd, (char*)&msg.header + ret, sizeof(msg.header) - ret, 0);
+			}
 		}
 		pthread_mutex_lock(&mutex);
 		if (ret != sizeof(msg.header)) {
+			printf("ret = %d\n");
 			break;
 		}
 		if (user_fd == -1) {
