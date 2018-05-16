@@ -19,6 +19,8 @@ void start(int fd);
 
 void stop();
 
+void clean();
+
 const char* stat();
 
 extern "C"
@@ -28,6 +30,14 @@ Java_io_github_ring00_ladder_MainActivity_stringFromJNI(
         jobject /* this */) {
     const char* hello = "Hello from C++";
     return env->NewStringUTF(hello);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_ring00_ladder_MainActivity_clean(
+        JNIEnv *env,
+        jobject /* this */) {
+    clean();
 }
 
 extern "C"
@@ -268,6 +278,13 @@ void stop() {
         sockfd = 0;
     }
     tunfd = 0;
+    memset(&in, 0, sizeof(struct Statistics));
+    memset(&out, 0, sizeof(struct Statistics));
+    time(&in.time);
+    time(&out.time);
+}
+
+void clean() {
     memset(&in, 0, sizeof(struct Statistics));
     memset(&out, 0, sizeof(struct Statistics));
     time(&in.time);

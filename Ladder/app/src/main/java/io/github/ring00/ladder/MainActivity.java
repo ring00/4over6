@@ -13,9 +13,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -40,9 +37,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @BindView(R.id.button) Button button;
 
     boolean connected = false;
+    boolean clicked = false;
+
     Thread updater = null;
 
     public native String getStatistics();
+
+    public native void clean();
 
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
@@ -59,13 +60,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button.setOnClickListener(this);
     }
 
-    private void changeVisibility(boolean connected) {
-        if (connected) {
+    private void changeVisibility(boolean clicked) {
+        if (clicked) {
             button.setText(R.string.connect);
 
             addressBox.setVisibility(View.VISIBLE);
             portBox.setVisibility(View.VISIBLE);
             statistics.setVisibility(View.GONE);
+
+            clean();
         } else {
             button.setText(R.string.disconnect);
 
@@ -78,14 +81,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         Button button = (Button) view;
-        changeVisibility(connected);
-        if (connected) {
-            connected = false;
+        changeVisibility(clicked);
+        clicked = !clicked;
 
-            if (updater != null) {
-                updater.interrupt();
-            }
-        } else {
+        if (!connected) {
             connected = true;
 
             Intent intent = VpnService.prepare(getApplicationContext());
